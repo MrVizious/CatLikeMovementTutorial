@@ -27,11 +27,12 @@ public class MovingSphereRigidbody : MonoBehaviour
     [SerializeField]
     public float jumpTimeBuffer = 0.15f;
     [SerializeField]
-    public float maxOnAirTime = 0.5f;
+    public float maxAirJumpTime = 0.5f;
 
-    private bool justPressedJump = false;
-    private bool pressedButton = false;
+    private bool jumpButtonJustPressed = false;
+    private bool jumpButtonPressed = false;
     private float timeSinceJumpPressed = float.MaxValue;
+    private float timeSinceLastJump = float.MaxValue;
     private float onAirTime = 0f;
     bool grounded = true;
 
@@ -44,14 +45,13 @@ public class MovingSphereRigidbody : MonoBehaviour
     public void InputJump(InputAction.CallbackContext context) {
         if (context.performed)
         {
-            justPressedJump = true;
-            pressedButton = true;
+            jumpButtonJustPressed = true;
+            jumpButtonPressed = true;
             timeSinceJumpPressed = 0f;
         }
         else if (context.canceled)
         {
-            onAirTime = 0f;
-            pressedButton = false;
+            jumpButtonPressed = false;
         }
     }
 
@@ -91,10 +91,9 @@ public class MovingSphereRigidbody : MonoBehaviour
             onAirTime += Time.deltaTime;
         }
 
-
         // Jump conditions
         // Normal jump
-        if (justPressedJump && timesJumped < maxNumberOfJumps)
+        if (jumpButtonJustPressed && timesJumped < maxNumberOfJumps)
         {
             Jump();
         }
@@ -103,23 +102,29 @@ public class MovingSphereRigidbody : MonoBehaviour
         {
             Jump();
         }
-
+        else if (timeSinceLastJump < maxAirJumpTime && timeSinceJumpPressed == timeSinceLastJump && jumpButtonPressed)
+        {
+            AddJumpSpeed();
+        }
 
         // Reset pressed button variable
-        justPressedJump = false;
+        jumpButtonJustPressed = false;
         timeSinceJumpPressed += Time.deltaTime;
+        timeSinceLastJump += Time.deltaTime;
     }
 
     private void Jump() {
         grounded = false;
         AddJumpSpeed();
         timesJumped++;
-        Debug.Log("Jump input");
+        timeSinceLastJump = 0f;
+        Debug.Log("Jumped");
     }
 
     private void AddJumpSpeed() {
         float jumpSpeed = Mathf.Sqrt(-2f * Physics.gravity.y * jumpHeight);
         rb.velocity = new Vector3(rb.velocity.x, jumpSpeed, rb.velocity.z);
+        Debug.Log("Speed added");
     }
 
     private void OnCollisionEnter(Collision other) {
