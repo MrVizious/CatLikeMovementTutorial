@@ -559,10 +559,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 10
-  maxAcceleration: 50
+  maxAcceleration: 57.2
+  maxAirAcceleration: 30.7
   jumpHeight: 3
   maxNumberOfJumps: 2
   timesJumped: 0
+  grounded: 0
 --- !u!96 &496003983
 TrailRenderer:
   serializedVersion: 2
@@ -626,8 +628,8 @@ TrailRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0.7176547, g: 0, b: 1, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 1}
+      key0: {r: 0.35205325, g: 0, b: 0.49056602, a: 1}
+      key1: {r: 0.8938236, g: 0, b: 1, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}

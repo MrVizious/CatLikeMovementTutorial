@@ -10,6 +10,8 @@ public class MovingSphereRigidbody : MonoBehaviour
     public float maxSpeed = 2f;
     [Range(0f, 100f)]
     public float maxAcceleration = 10f;
+    [Range(0f, 100f)]
+    public float maxAirAcceleration = 10f;
 
     // Jump
     [Range(0f, 10f)]
@@ -22,8 +24,11 @@ public class MovingSphereRigidbody : MonoBehaviour
     Vector2 playerInput;
     Vector3 velocity;
 
-    bool desiredJump = false;
-    bool grounded = false;
+    [SerializeField]
+    private float jumpTimeBuffer = 0.15f;
+    [SerializeField]
+    private float desiredJump = 0f;
+    bool grounded = true;
 
     Rigidbody rb;
 
@@ -32,7 +37,10 @@ public class MovingSphereRigidbody : MonoBehaviour
     }
 
     public void UpdateJump(InputAction.CallbackContext context) {
-        desiredJump = context.action.triggered;
+        if (context.performed)
+        {
+            desiredJump = 0.2f;
+        }
     }
 
     public void UpdateMovementInput(InputAction.CallbackContext context) {
@@ -40,16 +48,25 @@ public class MovingSphereRigidbody : MonoBehaviour
         playerInput = Vector2.ClampMagnitude(playerInput, 1f);
     }
 
+    private void Update() {
+        if (desiredJump > 0f)
+        {
+            desiredJump = Mathf.Max(0, desiredJump - Time.deltaTime);
+        }
+    }
     private void FixedUpdate() {
         if (grounded) timesJumped = 0;
         Movement();
         CheckJump();
-        grounded = false;
     }
 
     private void Movement() {
+
         Vector3 desiredVelocity = new Vector3(playerInput.x, 0f, playerInput.y) * maxSpeed;
-        float maxSpeedChange = maxAcceleration * Time.fixedDeltaTime;
+
+        float acceleration = grounded ? maxAcceleration : maxAirAcceleration;
+        float maxSpeedChange = acceleration * Time.fixedDeltaTime;
+
         velocity = rb.velocity;
         velocity.x = Mathf.MoveTowards(velocity.x, desiredVelocity.x, maxSpeedChange);
         velocity.z = Mathf.MoveTowards(velocity.z, desiredVelocity.z, maxSpeedChange);
@@ -57,9 +74,10 @@ public class MovingSphereRigidbody : MonoBehaviour
     }
 
     private void CheckJump() {
-        if (desiredJump && timesJumped < maxNumberOfJumps)
+        if (desiredJump > 0f && timesJumped < maxNumberOfJumps)
         {
-            desiredJump = false;
+            desiredJump = 0f;
+            grounded = false;
             Jump();
         }
     }
