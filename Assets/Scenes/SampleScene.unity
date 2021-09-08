@@ -559,12 +559,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 10
-  maxAcceleration: 57.2
-  maxAirAcceleration: 30.7
+  maxAcceleration: 10
+  maxAirAcceleration: 1
   jumpHeight: 3
   maxNumberOfJumps: 2
   timesJumped: 0
-  grounded: 0
+  jumpTimeBuffer: 0.2
+  maxOnAirTime: 0.5
 --- !u!96 &496003983
 TrailRenderer:
   serializedVersion: 2
@@ -1601,7 +1602,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 496003982}
         m_TargetAssemblyTypeName: MovingSphereRigidbody, Assembly-CSharp
-        m_MethodName: UpdateJump
+        m_MethodName: InputJump
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
